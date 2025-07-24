@@ -1,18 +1,22 @@
-# Euronext ESG Data Scraper
+# Euronext Data Scrapers
 
-A Python web scraper to extract Environmental, Social, and Governance (ESG) indicators from Euronext's API for all companies listed in a CSV file.
+This project contains two Python web scrapers for extracting data from Euronext:
+1. **ESG Data Scraper**: Extracts Environmental, Social, and Governance (ESG) indicators.
+2. **Sector Extractor**: Extracts the industry sector for each company.
 
 ## Project Overview
 
+### 1. ESG Data Scraper (`euronext_scraper.py`)
+
 This scraper processes a CSV file containing company data (Name, ISIN, Symbol, Market, Currency, Turnover, MIC) and extracts ESG data from Euronext's API endpoints for each company.
 
-### Data Sources Scraped:
+#### Data Sources Scraped:
 - **Environmental indicators**: CO2 emissions, energy consumption, etc.
 - **Social & governance indicators**: workforce diversity, board composition, etc.
 - **EU taxonomy CSRD eligibility**: regulatory compliance data
 - **ESG ratings**: third-party ratings and scores
 
-### Output Structure:
+#### Output Structure:
 ```
 output/
 ├── euronext_esg_data.json          # Main results (all successful companies)
@@ -22,6 +26,10 @@ output/
     ├── {ISIN}-{MIC}_esg_social_governance_indicators.html
     └── ...
 ```
+
+### 2. Sector Extractor (`sector_extractor.py`)
+
+This script takes the `Euronext_Equities_with_MIC.csv` file, iterates through each company, and fetches its industry sector from a Euronext AJAX endpoint. It then creates a new CSV file named `Euronext_Equities_with_MIC_and_Sector.csv` with an added "Sector" column.
 
 ## Quick Start
 
@@ -37,9 +45,13 @@ poetry install
 ### 2. Add Your Data File
 Place your `Euronext_Equities_with_MIC.csv` file in the project root directory.
 
-### 3. Run the Scraper
+### 3. Run the Scrapers
 
-#### Test Mode (Recommended First):
+#### ESG Scraper
+<details>
+<summary>Click to expand</summary>
+
+##### Test Mode (Recommended First):
 ```bash
 # Enter Poetry environment
 poetry shell
@@ -51,21 +63,32 @@ python src/euronext_scraper.py --test
 python src/euronext_scraper.py --test --companies 10
 ```
 
-#### Full Scraping:
+##### Full Scraping:
 ```bash
 # Scrape all companies (2,374 companies - takes ~63 minutes)
 python src/euronext_scraper.py
 ```
 
-#### Custom CSV file:
+##### Custom CSV file:
 ```bash
 # Use different CSV file
 python src/euronext_scraper.py --csv "path/to/your/file.csv"
 ```
+</details>
+
+#### Sector Extractor
+```bash
+# Enter Poetry environment
+poetry shell
+
+# Run the sector extractor
+python src/sector_extractor.py
+```
+This will create the `Euronext_Equities_with_MIC_and_Sector.csv` file.
 
 ## Expected Results
 
-### Performance Metrics:
+### ESG Scraper Performance:
 - **Rate limiting**: 2 requests per second
 - **Success rate**: Typically 60-90% (many companies don't have ESG data)
 - **Full scraping time**: ~63 minutes for 2,374 companies
@@ -80,23 +103,22 @@ Main results file with all successfully scraped companies, containing structured
 List of all failed requests for debugging, including error messages and URLs.
 
 #### `output/html_files/`
-Original HTML files preserved for each successful request:
-- `{ISIN}-{MIC}_esg_environmental_indicators.html`
-- `{ISIN}-{MIC}_esg_social_governance_indicators.html`
-- `{ISIN}-{MIC}_esg_eu_taxonomy_csrd_eligibility.html`
-- `{ISIN}-{MIC}_esg_ratings.html`
+Original HTML files preserved for each successful request.
+
+#### `Euronext_Equities_with_MIC_and_Sector.csv`
+The original CSV with an added "Sector" column.
 
 ## Troubleshooting
 
 ### Common Issues:
 
-1. **No data found (404 errors)**: Normal - many companies don't publish ESG data
-2. **Connection timeouts**: Increase `request_delay` in the code
-3. **Rate limiting errors**: The script already includes appropriate delays
-4. **Memory issues**: For very large datasets, consider processing in batches
+1. **No data found (404 errors)**: Normal - many companies don't publish ESG or sector data.
+2. **Connection timeouts**: Increase `request_delay` in the code.
+3. **Rate limiting errors**: The scripts already include appropriate delays.
+4. **Memory issues**: For very large datasets, consider processing in batches.
 
 ### Log Files:
-Check `logs/scraper.log` for detailed execution logs.
+Check `logs/scraper.log` and `logs/sector_extractor.log` for detailed execution logs.
 
 ## Project Structure
 
@@ -107,7 +129,8 @@ Check `logs/scraper.log` for detailed execution logs.
 ├── claude.md                   # Detailed implementation guide
 ├── src/
 │   ├── __init__.py
-│   └── euronext_scraper.py     # Main scraper class
+│   ├── euronext_scraper.py     # Main ESG scraper class
+│   └── sector_extractor.py     # Sector extractor script
 ├── output/                     # Generated results (created at runtime)
 ├── logs/                       # Log files (created at runtime)
 └── Euronext_Equities_with_MIC.csv  # Your data file (add this)
@@ -119,6 +142,7 @@ Check `logs/scraper.log` for detailed execution logs.
 - **requests**: HTTP requests to Euronext API
 - **beautifulsoup4**: HTML parsing
 - **lxml**: XML/HTML parser backend
+- **googlesearch-python**: For the initial, less reliable version of the sector extractor.
 
 ## Author
 
