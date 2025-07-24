@@ -5,6 +5,9 @@ __pycache__/
 
 # C extensions
 *.so
+.~lock.Euronext_Equities_with_MIC_and_Sector.csv#
+Euronext_Equities_with_MIC.csv
+Euronext_Equities_with_MIC_and_Sector.csv
 
 # Distribution / packaging
 .Python
@@ -224,4 +227,4 @@ secrets.json
 *_data.csv
 
 # Backup files
-*.backup 
+*.backup
