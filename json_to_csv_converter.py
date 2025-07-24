@@ -47,12 +47,10 @@ class ESGJsonToCsvConverter:
                 'scrape_timestamp': company_record.get('scrape_timestamp')
             }
             
-            # Count indicators per category
             for category, category_data in esg_data.items():
                 if isinstance(category_data, dict) and 'row_count' in category_data:
                     row[f'{category}_indicators_count'] = category_data['row_count']
                     
-                    # Add metadata if available
                     metadata = category_data.get('metadata', {})
                     if metadata:
                         row[f'{category}_source'] = metadata.get('source')
@@ -117,7 +115,6 @@ class ESGJsonToCsvConverter:
         output_files = []
         categories_data = {}
         
-        # Organize data by category
         for company_record in self.data.get('companies', []):
             company_info = company_record.get('company', {})
             esg_data = company_record.get('esg_data', {})
@@ -152,7 +149,6 @@ class ESGJsonToCsvConverter:
                         })
                         categories_data[category].append(row)
         
-        # Save each category to separate CSV
         for category, data in categories_data.items():
             df = pd.DataFrame(data)
             output_file = self.output_dir / f'{category}.csv'
@@ -182,14 +178,12 @@ class ESGJsonToCsvConverter:
                 'scrape_timestamp': company_record.get('scrape_timestamp')
             }
             
-            # Add each indicator as a column
             for category, category_data in esg_data.items():
                 if isinstance(category_data, dict) and 'data' in category_data:
                     for indicator_row in category_data['data']:
                         indicator_name = indicator_row.get('Indicator', '')
                         unit = indicator_row.get('Unit', '')
                         
-                        # Create column names with category prefix
                         col_prefix = f"{category}_{indicator_name}".replace(' ', '_').replace('(', '').replace(')', '').replace('/', '_').replace('-', '_')
                         
                         row[f"{col_prefix}_2024"] = indicator_row.get('2024')
@@ -212,16 +206,12 @@ class ESGJsonToCsvConverter:
         
         output_files = []
         
-        # 1. Companies summary
         output_files.append(self.convert_companies_summary())
         
-        # 2. Detailed indicators
         output_files.append(self.convert_indicators_detailed())
         
-        # 3. Category-specific files
         output_files.extend(self.convert_by_category())
         
-        # 4. Pivot table
         output_files.append(self.convert_pivot_table())
         
         print("="*60)
@@ -237,7 +227,6 @@ def main():
     
     args = parser.parse_args()
     
-    # Check if input file exists
     if not Path(args.input).exists():
         print(f"❌ Error: Input file '{args.input}' not found!")
         return 1
