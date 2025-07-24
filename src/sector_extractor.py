@@ -21,7 +21,7 @@ class SectorExtractor:
             'Sec-Fetch-Site': 'none',
             'Cache-Control': 'max-age=0'
         })
-        self.request_delay = 0.5  # Reduced delay as the endpoint is more specific
+        self.request_delay = 0.5  
         self.retry_attempts = 3
         self.retry_delay = 2
 
@@ -57,7 +57,6 @@ class SectorExtractor:
                 
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
-                # Find the <td> element with the text "Industry"
                 industry_header = soup.find('td', string="Industry")
                 
                 if industry_header and industry_header.find_next_sibling('td'):
